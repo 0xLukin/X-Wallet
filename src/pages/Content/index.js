@@ -12,7 +12,7 @@ const injectedNode = document.createElement('div');
 injectedNode.id = 'my-injected-app';
 // document.body.prepend(injectedNode);
 
-// ReactDOM.render(<InjectedApp />, injectedNode);
+ReactDOM.render(<InjectedApp />, injectedNode);
 
 const callback = function (mutationsList, observer) {
   for (let mutation of mutationsList) {
@@ -24,6 +24,7 @@ const callback = function (mutationsList, observer) {
         // 设置目标元素的父元素为 flex 容器
         // targetElement.parentNode.style.display = 'flex';
         ReactDOM.render(<InjectedApp />, targetDiv);
+
         observer.disconnect(); // 如果你找到目标并注入后不再需要观察，可以断开连接
       }
     }

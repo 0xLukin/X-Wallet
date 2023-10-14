@@ -10,6 +10,7 @@ var ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 var ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 var alias = {};
 
@@ -134,13 +135,27 @@ var options = {
     extensions: fileExtensions
       .map((extension) => '.' + extension)
       .concat(['.js', '.jsx', '.ts', '.tsx', '.css']),
+    fallback: {
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+      url: require.resolve('url/'),
+      http: require.resolve('stream-http'),
+      zlib: require.resolve('browserify-zlib'),
+      https: require.resolve('https-browserify'),
+    },
   },
+
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
+    new NodePolyfillPlugin(),
+
     // expose and write the allowed env vars on the compiled bundle
     new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new webpack.DefinePlugin({
+      process: { env: {} },
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {

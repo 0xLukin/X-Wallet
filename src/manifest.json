@@ -17,9 +17,22 @@
   "content_scripts": [
     {
       "matches": ["https://twitter.com/*"],
-      "js": ["contentScript.bundle.js"],
+      "js": [
+        "contentScript.bundle.js",
+        "770.bundle.js",
+        "633.bundle.js",
+        "429.bundle.js",
+        "716.bundle.js"
+      ],
       "css": ["content.styles.css"]
     }
+  ],
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "scripting",
+    "https://twitter.com/770.bundle.js"
   ],
   "devtools_page": "devtools.html",
   "web_accessible_resources": [
