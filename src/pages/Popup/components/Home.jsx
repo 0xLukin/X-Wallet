@@ -66,7 +66,7 @@ const Home = () => {
           />
         </div>
         <div className="unit">net Worth</div>
-        <div className="worth">{`$ 123479.89`}</div>
+        <div className="worth">${`${Number(data.formatted) * 0.5}`}</div>
       </>
     );
   };
@@ -83,19 +83,19 @@ const Home = () => {
         name: 'ETH',
         symbol: ETH,
         decimals: 18,
-        account: '102879',
+        account: '0',
       },
       {
         name: 'BTC',
         symbol: BTC,
         decimals: 18,
-        account: '80',
+        account: '0',
       },
       {
         name: 'BNB',
         symbol: BNB,
         decimals: 18,
-        account: '1085',
+        account: '0',
       },
       // {
       //   name: 'Matic',
@@ -288,7 +288,7 @@ const Home = () => {
             <div className="flex justify-center item-style">
               <div className="label-style"></div>
               <div className="input-style flex justify-start font-medium leading-10">
-                ETH
+                {`MATIC: ${data.formatted} `}
               </div>
             </div>
             <div className="flex justify-center item-style">
