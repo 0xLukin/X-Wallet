@@ -37,25 +37,25 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const { connect } = useConnect();
-  const { login, isLoading, account_name } = useWallet();
+  const { login, isLoading, accountName } = useWallet();
   const commonContext = useContext(ctx);
 
   console.log(commonContext, 'data1');
 
-  const connectWallet = useCallback(async () => {
-    setLoading(true);
-    console.log('twitter');
+  // const connectWallet = useCallback(async () => {
+  //   setLoading(true);
+  //   console.log('twitter');
 
-    await connect({
-      connector: connector,
-    });
+  //   await connect({
+  //     connector: connector,
+  //   });
 
-    commonContext.setUserInfo({ account_name });
-    commonContext.routeTo('/home');
+  //   commonContext.setUserInfo({ account_name });
+  //   commonContext.routeTo('/home');
 
-    setLoading(false);
-  }, [connect, commonContext]);
-
+  //   setLoading(false);
+  // }, [connect, commonContext]);
+  console.log(accountName, 'local_name');
   return (
     <div className="login">
       <img
@@ -69,7 +69,8 @@ export default function Login() {
           disabled={isLoading}
           onClick={async () => {
             await login();
-
+            console.log(accountName, 'login)name');
+            commonContext.setUserInfo({ accountName });
             commonContext.routeTo('/home');
           }}
           className=""

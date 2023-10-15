@@ -28,7 +28,7 @@ export function useWallet() {
 
   const [ecdsaProvider_global, setEcdsaProvider_global] = useState(null);
   const [account_address, setAccount_address] = useState('xxxx');
-  const [account_name, setAccount_name] = useState('xxxx');
+  const [accountName, setAccountName] = useState('xxssssxx');
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const { connect, connectAsync } = useConnect();
@@ -73,7 +73,7 @@ export function useWallet() {
     );
     return await response.json();
   };
-  const login = async () => {
+  const login = useCallback(async () => {
     setIsLoading(true);
     console.log('twitter');
     const res = await connectAsync({
@@ -109,7 +109,7 @@ export function useWallet() {
     // 设置全局ecdsaProvider
     console.log('twitter' + handle.name);
     setAccount_address(account_address['account_address']);
-    setAccount_name(handle.name);
+    setAccountName(handle.name);
     setEcdsaProvider_global(ecdsaProvider);
     setIsConnected(true);
 
@@ -124,7 +124,7 @@ export function useWallet() {
     //   await disConnect();
 
     // routerContext.routeTo('/home');
-  };
+  }, []);
 
   const mintNft = useCallback(async () => {
     const account_address = await ecdsaProvider.getAddress();
@@ -169,7 +169,7 @@ export function useWallet() {
     mintNft,
     ecdsaProvider_global,
     account_address,
-    account_name,
+    accountName,
     isLoading,
     setIsLoading,
     account_balance,
