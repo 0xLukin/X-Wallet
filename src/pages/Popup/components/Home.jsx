@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useAccount, useDisconnect, useNetwork } from 'wagmi';
+import { useAccount, useDisconnect, useNetwork, useBalance } from 'wagmi';
 import { message } from 'antd';
 import Header from './Header';
 import Footer from './Footer';
@@ -24,6 +24,10 @@ import { useWallet } from '../hooks/useWallet';
 
 const Home = () => {
   const { address, connector, isConnected } = useAccount();
+  const { data, isError } = useBalance({
+    address: localStorage.getItem('accountAddress'),
+    watch: true,
+  });
   const { disconnect } = useDisconnect();
   const [tabKey, setTabKey] = useState('home');
   const [account, setAccount] = useState('');
@@ -70,6 +74,12 @@ const Home = () => {
   const tokensList = useMemo(
     () => [
       {
+        name: 'Matic',
+        symbol: Matic,
+        decimals: 18,
+        account: data.formatted,
+      },
+      {
         name: 'ETH',
         symbol: ETH,
         decimals: 18,
@@ -87,32 +97,32 @@ const Home = () => {
         decimals: 18,
         account: '1085',
       },
-      {
-        name: 'Matic',
-        symbol: Matic,
-        decimals: 18,
-        account: '125',
-      },
-      {
-        name: 'Matic',
-        symbol: Matic,
-        decimals: 18,
-        account: '125',
-      },
-      {
-        name: 'Matic',
-        symbol: Matic,
-        decimals: 18,
-        account: '125',
-      },
-      {
-        name: 'Matic',
-        symbol: Matic,
-        decimals: 18,
-        account: '125',
-      },
+      // {
+      //   name: 'Matic',
+      //   symbol: Matic,
+      //   decimals: 18,
+      //   account: data.formatted,
+      // },
+      // {
+      //   name: 'Matic',
+      //   symbol: Matic,
+      //   decimals: 18,
+      //   account: '125',
+      // },
+      // {
+      //   name: 'Matic',
+      //   symbol: Matic,
+      //   decimals: 18,
+      //   account: '125',
+      // },
+      // {
+      //   name: 'Matic',
+      //   symbol: Matic,
+      //   decimals: 18,
+      //   account: '125',
+      // },
     ],
-    []
+    [data]
   );
   const nftsList = useMemo(
     () => [
