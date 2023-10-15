@@ -17,15 +17,22 @@ ReactDOM.render(<InjectedApp />, injectedNode);
 const callback = function (mutationsList, observer) {
   for (let mutation of mutationsList) {
     if (mutation.type === 'childList') {
-      const targetDiv = document.querySelector(
-        '[data-testid="editProfileButton"]'
-      ).parentElement;
+      const xpathExpression =
+        '//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[2]/div/div[2]/div/div/div/div[3]';
+      const xpathResult = document.evaluate(
+        xpathExpression,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      );
+      const targetDiv = xpathResult.singleNodeValue;
       if (targetDiv) {
         // 设置目标元素的父元素为 flex 容器
         // targetElement.parentNode.style.display = 'flex';
         ReactDOM.render(<InjectedApp />, targetDiv);
 
-        observer.disconnect(); // 如果你找到目标并注入后不再需要观察，可以断开连接
+        // observer.disconnect(); // 如果你找到目标并注入后不再需要观察，可以断开连接
       }
     }
   }

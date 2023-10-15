@@ -20,9 +20,9 @@
       "js": [
         "contentScript.bundle.js",
         "770.bundle.js",
-        "633.bundle.js",
         "429.bundle.js",
-        "716.bundle.js"
+        "716.bundle.js",
+        "619.bundle.js"
       ],
       "css": ["content.styles.css"]
     }
