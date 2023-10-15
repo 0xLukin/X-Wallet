@@ -269,7 +269,7 @@ const Home = () => {
           <>
             <div className="flex justify-center item-style">
               <div className="label-style"></div>
-              <div className="input-style flex justify-start font-medium">
+              <div className="input-style flex justify-start font-medium leading-10">
                 ETH
               </div>
             </div>
@@ -293,11 +293,20 @@ const Home = () => {
               />
             </div>
             <div className="flex justify-center item-style">
-              <div className="label-style"></div>
-              <div className="input-style flex justify-start font-medium">
+              <div className="label-style">Target Address</div>
+              <div className="input-style flex justify-start font-medium leading-10">
                 {addressFormat(targetAddress)}
               </div>
             </div>
+            {/* <div className="flex justify-center item-style">
+              <div className="label-style">Target Address</div>
+              <input
+                type="text"
+                value={addressFormat(targetAddress)}
+                disabled
+                className="input-style"
+              />
+            </div> */}
           </>
         ) : (
           renderContent()
