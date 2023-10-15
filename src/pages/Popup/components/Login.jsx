@@ -35,7 +35,6 @@ const socialConnector = new SocialWalletConnector({
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const { connect, isLoading } = useConnect();
-
   const routerContext = useContext(ctx);
 
   console.log(routerContext, 'data1');

@@ -1,4 +1,4 @@
-.footer {
+.footer-box {
   height: 54px;
   color: #000;
   font-family: Inter;
@@ -8,11 +8,17 @@
   line-height: normal;
   background-color: #f7f9f9;
   display: flex;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 
-  div {
+  .footer-btn {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    &:hover,
+    &[data-active='true'] {
+      background-color: #1d9bf0;
+    }
   }
 }

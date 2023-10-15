@@ -8,6 +8,7 @@ export const linkUrls = {
   login: '/login',
   home: '/home',
   send: '/send',
+  tokens: '/tokens',
 };
 
 export const linkContext = createContext({ routerLink: '/' });

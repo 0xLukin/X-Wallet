@@ -1,14 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+  useContext,
+} from 'react';
 import { useAccount, useDisconnect, useNetwork } from 'wagmi';
 import Button from './Button';
+import ctx, { Provider, Consumer } from './appContext';
 
 import SettingLogo from '../assets/svg/setting.png';
 
 import './Header.scss';
 
-export default function Header() {
+const Header = ({
+  isHaveBack = false,
+  isHaveSetting = false,
+  isHaveSend = false,
+  onClick,
+}) => {
   const [twitterName, setTwitterName] = useState('');
   const { address, connector, isConnected } = useAccount();
+  const routerContext = useContext(ctx);
+  const { routeTo } = routerContext;
 
   const { disconnect } = useDisconnect();
   const { chain } = useNetwork();
@@ -23,14 +37,35 @@ export default function Header() {
   }, [isConnected]);
 
   return (
-    <div className="flex justify-between items-center w-full p-3">
-      <div className="twitter-name">
-        <Button value={twitterName} />
-      </div>
-      <div className="flex justify-center setting-wrap">
-        <Button value="Send" prefix="&uarr;" />
-        <img src={SettingLogo} className="setting-logo" />
-      </div>
+    <div className="flex justify-between items-center w-full p-3 header-wrap">
+      <>
+        {isHaveBack ? (
+          <Button value="&larr;" onClick={() => onClick('home')} />
+        ) : (
+          <div className="twitter-name">
+            <Button value={`@${twitterName}`} />
+          </div>
+        )}
+
+        <div className="flex justify-center setting-wrap">
+          {isHaveSend ? (
+            <Button
+              value="Send"
+              prefix="&uarr;"
+              onClick={() => onClick('send')}
+            />
+          ) : null}
+          {isHaveSetting ? (
+            <img
+              src={SettingLogo}
+              className="setting-logo"
+              onClick={() => onClick?.('setting')}
+            />
+          ) : null}
+        </div>
+      </>
     </div>
   );
-}
+};
+
+export default Header;

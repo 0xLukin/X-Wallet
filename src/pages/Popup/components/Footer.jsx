@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useState, useContext } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useState,
+  useContext,
+  useEffect,
+} from 'react';
 import { useAccount, useDisconnect, useNetwork } from 'wagmi';
 import Button from './Button';
 
@@ -8,19 +14,55 @@ import SettingLogo from '../assets/svg/setting.png';
 
 import './Footer.scss';
 
-const Footer = () => {
-  const [twitterName, setTwitterName] = useState('');
-  const { address, connector, isConnected } = useAccount();
+const Footer = ({ tabKey, onClick }) => {
+  const handleTabClick = useCallback(
+    (e) => {
+      const { tabKey } = e.target.dataset;
 
-  const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
+      // routeTo(`/${tabKey}`);
+      onClick?.(tabKey);
+    },
+    [onClick]
+  );
 
-  const { routeTo } = useContext(ctx);
+  const isSend = tabKey === 'send';
 
   return (
-    <div className="footer">
-      <div onClick={() => routeTo('/tokens')}>Tokens</div>
-      <div onClick={() => routeTo('/nfts')}>NFTs</div>
+    <div
+      className={`footer-box ${
+        isSend
+          ? 'flex justify-center items-center text-white bg-[#1D9BF0] cursor-pointer'
+          : ''
+      }`}
+    >
+      {isSend ? (
+        <div>send</div>
+      ) : (
+        <>
+          <div
+            className="footer-btn"
+            data-active={tabKey === 'tokens'}
+            style={{
+              borderBottomLeftRadius: '20px',
+            }}
+            data-tab-key="tokens"
+            onClick={handleTabClick}
+          >
+            Tokens
+          </div>
+          <div
+            data-active={tabKey === 'nfts'}
+            style={{
+              borderBottomRightRadius: '20px',
+            }}
+            data-tab-key="nfts"
+            className="footer-btn"
+            onClick={handleTabClick}
+          >
+            NFTs
+          </div>
+        </>
+      )}
     </div>
   );
 };

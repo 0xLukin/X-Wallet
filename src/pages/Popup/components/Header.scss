@@ -1,12 +1,20 @@
-.twitter-name {
-  display: flex;
-  align-items: center;
-}
-.setting-wrap {
-  gap: 14px;
-  align-items: center;
-  .setting-logo {
-    width: 31px;
-    height: 28px;
+.header-wrap {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+
+  .twitter-name {
+    display: flex;
+    align-items: center;
+  }
+  .setting-wrap {
+    gap: 14px;
+    align-items: center;
+    .setting-logo {
+      width: 31px;
+      height: 28px;
+    }
+    img:hover {
+      cursor: pointer;
+    }
   }
 }

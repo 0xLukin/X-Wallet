@@ -12,9 +12,9 @@ const Popup = () => {
         {/* <header className="App-header">
           <Header />
         </header> */}
-        <div className="App-body">
-          <Content />
-        </div>
+        {/* <div className="App-body"> */}
+        <Content />
+        {/* </div> */}
       </Web3Provider>
     </div>
   );
