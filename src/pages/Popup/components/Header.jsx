@@ -22,10 +22,6 @@ const Header = ({
   const [twitterName, setTwitterName] = useState('');
   const { address, connector, isConnected } = useAccount();
   const routerContext = useContext(ctx);
-  const { routeTo } = routerContext;
-
-  const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
 
   useEffect(() => {
     if (isConnected) {

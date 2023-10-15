@@ -20,6 +20,7 @@ import Kodama from '../assets/svg/qbrady_kodama.png';
 import Warrior from '../assets/svg/qbrady_warrior.png';
 
 import './Home.scss';
+import { useWallet } from '../hooks/useWallet';
 
 const Home = () => {
   const { address, connector, isConnected } = useAccount();
@@ -27,6 +28,9 @@ const Home = () => {
   const [tabKey, setTabKey] = useState('home');
   const [account, setAccount] = useState('');
   const [targetAddress, setTargetAddress] = useState('');
+  const [twitterName, setTwitterName] = useState('');
+
+  const { getaddress } = useWallet();
 
   const handleCopy = useCallback(async () => {
     try {
@@ -131,8 +135,8 @@ const Home = () => {
     setAccount(event.target.value);
   }, []);
 
-  const handleAddressChange = useCallback(
-    (e) => setTargetAddress(e.target.value),
+  const handleNameChange = useCallback(
+    (e) => setTwitterName(e.target.value),
     []
   );
 
@@ -243,8 +247,11 @@ const Home = () => {
     }
   }, [handleSettingListRender, nftsList, settingList, tabKey, tokensList]);
 
-  const handleGetAddress = (e) => {
-    console.log(e.target.value, 'eeee');
+  const handleGetAddress = async (e) => {
+    const name = e.target.value;
+    const res = await getaddress(name);
+
+    setTargetAddress(res?.['account_address']);
   };
 
   const isSend = tabKey === 'send';
@@ -279,11 +286,17 @@ const Home = () => {
               <div className="label-style">Twitter Name</div>
               <input
                 type="text"
-                value={targetAddress}
-                onChange={handleAddressChange}
+                value={twitterName}
+                onChange={handleNameChange}
                 onBlur={handleGetAddress}
                 className="input-style"
               />
+            </div>
+            <div className="flex justify-center item-style">
+              <div className="label-style"></div>
+              <div className="input-style flex justify-start font-medium">
+                {addressFormat(targetAddress)}
+              </div>
             </div>
           </>
         ) : (

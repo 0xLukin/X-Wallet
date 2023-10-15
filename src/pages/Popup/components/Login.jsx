@@ -56,6 +56,16 @@ export default function Login() {
   //   setLoading(false);
   // }, [connect, commonContext]);
   console.log(accountName, 'local_name');
+
+  const handleClick = useCallback(async () => {
+    const name = await login();
+    console.log(name, 'test-----name');
+
+    console.log(accountName, 'login)name======');
+    commonContext.setUserInfo({ accountName });
+    commonContext.routeTo('/home');
+  }, [accountName, commonContext, login]);
+
   return (
     <div className="login">
       <img
@@ -65,16 +75,7 @@ export default function Login() {
         style={{ width: '240px', height: '80px' }}
       />
       <div className="bg-[#000] text-white mx-8 my-7 text-xs rounded-full w-36 h-8 leading-7 flex justify-center justify-items-center connect-btn">
-        <button
-          disabled={isLoading}
-          onClick={async () => {
-            await login();
-            console.log(accountName, 'login)name');
-            commonContext.setUserInfo({ accountName });
-            commonContext.routeTo('/home');
-          }}
-          className=""
-        >
+        <button disabled={isLoading} onClick={handleClick} className="">
           <div>
             {isLoading || loading ? 'Loading...' : 'Connect Wallet'}
             {/* <div className="ml-1 mt-[1px]">

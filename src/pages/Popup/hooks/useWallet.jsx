@@ -3,7 +3,6 @@ import { configureChains, useConnect, useBalance, useDisconnect } from 'wagmi';
 import { polygonMumbai } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { TwitterSocialWalletConnector } from '@zerodev/wagmi';
-import ctx, { Provider, Consumer } from '../components/appContext';
 import { ECDSAProvider, getRPCProviderOwner } from '@zerodev/sdk';
 import { NFT_Contract_Abi } from '../config/contractAbi';
 import { encodeFunctionData, parseEther } from 'viem';
@@ -36,11 +35,10 @@ export function useWallet() {
   const { data: account_balance, isError } = useBalance({
     address: account_address,
   });
-  const routerContext = useContext(ctx);
 
   const getaddress = async (handle) => {
     const requestBody = JSON.stringify({
-      handle: handle,
+      handle,
     });
     const response = await fetch(
       'https://x-wallet-backend.vercel.app/api/getAddress',
@@ -55,6 +53,7 @@ export function useWallet() {
     );
     return await response.json();
   };
+
   const deploy = async (handle, newOwner) => {
     const requestBody = JSON.stringify({
       handle: handle,
@@ -73,6 +72,7 @@ export function useWallet() {
     );
     return await response.json();
   };
+
   const login = useCallback(async () => {
     setIsLoading(true);
     console.log('twitter');
@@ -84,7 +84,7 @@ export function useWallet() {
     const owner = await res.connector.owner.getAddress();
     console.log(owner);
     // 查询accountaddress
-    const account_address = await getaddress(handle.name);
+    const addressInHandle = await getaddress(handle.name);
     console.log(handle.name);
     console.log('account_address:' + account_address['account_address']);
 
@@ -100,15 +100,16 @@ export function useWallet() {
       owner: getRPCProviderOwner(res.connector.web3Auth.provider),
       opts: {
         accountConfig: {
-          accountAddress: account_address['account_address'],
+          accountAddress: addressInHandle['account_address'],
         },
       },
     });
     //   console.log(ecdsaProvider);
     //   console.log(await ecdsaProvider.getAddress());
     // 设置全局ecdsaProvider
-    console.log('twitter' + handle.name);
-    setAccount_address(account_address['account_address']);
+    console.log('twitter---------' + handle.name);
+
+    setAccount_address(addressInHandle['account_address']);
     setAccountName(handle.name);
     setEcdsaProvider_global(ecdsaProvider);
     setIsConnected(true);
@@ -126,7 +127,8 @@ export function useWallet() {
     //   await disConnect();
 
     // routerContext.routeTo('/home');
-  }, []);
+    return handle.name;
+  }, [setAccountName]);
 
   const mintNft = useCallback(async () => {
     const account_address = await ecdsaProvider.getAddress();
@@ -140,18 +142,23 @@ export function useWallet() {
       }),
     });
     return hash;
-  }, []);
-  const sendETH = useCallback(async (targe, value) => {
-    const to_address = await getaddress(targe);
-    console.log('to_address:' + to_address['account_address']);
-    const { hash } = await ecdsaProvider.sendUserOperation({
-      target: to_address['account_address'],
-      data: '0x',
-      value: value,
-    });
-    console.log(hash);
-    return hash;
-  }, []);
+  }, [ecdsaProvider]);
+
+  const sendETH = useCallback(
+    async (targe, value) => {
+      const to_address = await getaddress(targe);
+      console.log('to_address:' + to_address['account_address']);
+      const { hash } = await ecdsaProvider.sendUserOperation({
+        target: to_address['account_address'],
+        data: '0x',
+        value: value,
+      });
+      console.log(hash);
+      return hash;
+    },
+    [ecdsaProvider]
+  );
+
   const disConnect = useCallback(async () => {
     setIsConnected(false);
     setEcdsaProvider_global(null);
@@ -164,6 +171,7 @@ export function useWallet() {
     //   console.log(res);
     // });
   }, []);
+
   return {
     getaddress,
     login,
