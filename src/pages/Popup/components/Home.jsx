@@ -50,7 +50,10 @@ const Home = () => {
     return (
       <>
         <div className="address" onClick={handleCopy}>
-          <Button value={addressFormat(address)} suffix={CopyBtn} />
+          <Button
+            value={addressFormat(localStorage.getItem('accountAddress'))}
+            suffix={CopyBtn}
+          />
         </div>
         <div className="unit">net Worth</div>
         <div className="worth">{`$ 123479.89`}</div>
