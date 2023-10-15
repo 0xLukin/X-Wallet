@@ -19,75 +19,14 @@ import Kanjigirl from '../assets/svg/qbrady_kanjigirl.png';
 import Kodama from '../assets/svg/qbrady_kodama.png';
 import Warrior from '../assets/svg/qbrady_warrior.png';
 
-import { ZeroDevWeb3Auth } from '@zerodev/web3auth';
-
 import './Home.scss';
-
-const HomePage = () => {
-  const [twitterName, setTwitterName] = useState('');
-  const { address, connector, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
-
-  useEffect(() => {
-    if (isConnected) {
-      connector.web3Auth.getUserInfo().then((res) => {
-        console.log(res);
-        setTwitterName(res.name);
-      });
-    }
-  }, [isConnected]);
-
-  console.log(isConnected, 'isConnected---home');
-  console.log(address, 'address---home');
-
-  return (
-    <div>
-      {/* <div className="p-2 bg-white border rounded shadow-lg"> */}
-      {/* <div className="mb-2">
-        <div className="text-gray-700">Connected Address:</div>
-        <div className="font-semibold">
-          {address?.slice(0, 6)}
-          ...
-          {address?.slice(-6)}
-        </div>
-      </div>
-
-      <div className="mb-2">
-        <div className="text-gray-700">Connected to:</div>
-        <div className="font-semibold">
-          {connector.name} {twitterName}
-        </div>
-      </div>
-
-      <a
-        href={`${chain.blockExplorers.default.url}/address/${address}`}
-        target="_blank"
-        className="text-blue-500 hover:underline"
-        rel="noreferrer"
-      >
-        Explore on Etherscan
-      </a>
-
-      <button
-        onClick={disconnect}
-        className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-      >
-        Disconnect
-      </button>
-      <MintButton /> */}
-    </div>
-  );
-};
 
 const Home = () => {
   const { address, connector, isConnected } = useAccount();
-
   const { disconnect } = useDisconnect();
-
   const [tabKey, setTabKey] = useState('home');
-
-  console.log(tabKey, 'tabkey,,,,');
+  const [account, setAccount] = useState('');
+  const [targetAddress, setTargetAddress] = useState('');
 
   const handleCopy = useCallback(async () => {
     try {
@@ -185,27 +124,12 @@ const Home = () => {
     []
   );
 
-  const handleAccountChange = (account) => {};
-  const handleAddressChange = (address) => {};
+  const handleAccountChange = useCallback((event) => {
+    setAccount(event.target.value);
+  }, []);
 
-  const sendList = useMemo(
-    () => [
-      {
-        label: ' ',
-        value: '',
-        onChange: () => {},
-      },
-      {
-        label: 'Account',
-        value: '',
-        onChange: handleAccountChange,
-      },
-      {
-        label: 'Address',
-        value: '',
-        onChange: handleAddressChange,
-      },
-    ],
+  const handleAddressChange = useCallback(
+    (e) => setTargetAddress(e.target.value),
     []
   );
 
@@ -310,35 +234,17 @@ const Home = () => {
             renderItem={handleSettingListRender}
           />
         );
-      case 'send':
-        return (
-          <>
-            {sendList.map((item) => (
-              <SendItem {...item} key={item.label} />
-            ))}
-          </>
-        );
 
       default:
         return <HomeContent />;
     }
-  }, [
-    handleSettingListRender,
-    nftsList,
-    sendList,
-    settingList,
-    tabKey,
-    tokensList,
-  ]);
+  }, [handleSettingListRender, nftsList, settingList, tabKey, tokensList]);
 
-  const SendItem = ({ label, keyword, value, onChange }) => {
-    return (
-      <div className="flex justify-center">
-        <div className="label-style">{label}</div>
-        <input type="text" value={value} onChange={onChange} />
-      </div>
-    );
+  const handleGetAddress = (e) => {
+    console.log(e.target.value, 'eeee');
   };
+
+  const isSend = tabKey === 'send';
 
   return (
     <div className="home-container ">
@@ -348,7 +254,39 @@ const Home = () => {
         isHaveSetting={tabKey === 'home' || tabKey === 'setting'}
         onClick={setTabKey}
       />
-      <div className="content-wrap">{renderContent()}</div>
+      <div className="content-wrap">
+        {isSend ? (
+          <>
+            <div className="flex justify-center item-style">
+              <div className="label-style"></div>
+              <div className="input-style flex justify-start font-medium">
+                ETH
+              </div>
+            </div>
+            <div className="flex justify-center item-style">
+              <div className="label-style">Account</div>
+              <input
+                type="text"
+                value={account}
+                onChange={handleAccountChange}
+                className="input-style"
+              />
+            </div>
+            <div className="flex justify-center item-style">
+              <div className="label-style">Twitter Name</div>
+              <input
+                type="text"
+                value={targetAddress}
+                onChange={handleAddressChange}
+                onBlur={handleGetAddress}
+                className="input-style"
+              />
+            </div>
+          </>
+        ) : (
+          renderContent()
+        )}
+      </div>
       {tabKey !== 'setting' && (
         <div className="footer-wrap">
           <Footer tabKey={tabKey} onClick={setTabKey} />

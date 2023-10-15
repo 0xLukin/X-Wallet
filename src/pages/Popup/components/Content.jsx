@@ -17,6 +17,7 @@ export default function Content() {
   const { isConnected } = useAccount();
 
   const [routerLink, setRouterLink] = useState(linkUrls.login);
+  const [userInfo, setUserInfo] = useState({});
   const routeTo = (url) => setRouterLink(url);
 
   const renderContent = useCallback(() => {
@@ -36,7 +37,7 @@ export default function Content() {
 
   return (
     <div className="h-full w-full">
-      <Provider value={{ routerLink, routeTo }}>
+      <Provider value={{ routerLink, routeTo, userInfo, setUserInfo }}>
         {isConnected ? renderContent() : <Login />}
       </Provider>
     </div>

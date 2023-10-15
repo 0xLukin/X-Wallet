@@ -87,12 +87,22 @@
     overflow: auto;
   }
 }
+.item-style {
+  margin: 5px 0;
+}
 .label-style {
   color: #000;
   font-family: Inter;
   font-size: 15px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal;
   width: 100px;
+  height: 40px;
+  line-height: 40px;
+}
+.input-style {
+  height: 40px;
+  width: 185px;
+  border-radius: 20px;
+  padding: 0 20px;
 }

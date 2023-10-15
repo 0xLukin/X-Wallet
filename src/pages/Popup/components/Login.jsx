@@ -35,10 +35,9 @@ const socialConnector = new SocialWalletConnector({
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const { connect, isLoading } = useConnect();
-  const routerContext = useContext(ctx);
+  const commonContext = useContext(ctx);
 
-  console.log(routerContext, 'data1');
-  console.log(routerContext?.routerLink, 'data1.routerLink');
+  console.log(commonContext, 'data1');
 
   const connectWallet = useCallback(async () => {
     setLoading(true);
@@ -48,10 +47,11 @@ export default function Login() {
       connector: connector,
     });
 
-    routerContext.routeTo('/home');
+    commonContext.setUserInfo({});
+    commonContext.routeTo('/home');
 
     setLoading(false);
-  }, [connect, routerContext]);
+  }, [connect, commonContext]);
 
   return (
     <div className="login">

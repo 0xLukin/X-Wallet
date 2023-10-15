@@ -24,7 +24,6 @@ const Footer = ({ tabKey, onClick }) => {
     },
     [onClick]
   );
-
   const isSend = tabKey === 'send';
 
   return (
