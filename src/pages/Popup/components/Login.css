@@ -1,0 +1,15 @@
+.login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.welcome-logo {
+  /* position: absolute; */
+  /* top: 50px;
+  left: 50%;
+  transform: translateX(50%); */
+}
+.connect-btn:hover {
+  background-color: #1d9bf0;
+}

@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount, useDisconnect, useNetwork } from 'wagmi';
 import MintButton from './MintButton';
+import Header from './Header';
+import Footer from './Footer';
 import { ZeroDevWeb3Auth } from '@zerodev/web3auth';
 
-export default function Home() {
+import './Home.scss';
+
+const HomePage = () => {
   const [twitterName, setTwitterName] = useState('');
   const { address, connector, isConnected } = useAccount();
 
@@ -19,14 +23,18 @@ export default function Home() {
     }
   }, [isConnected]);
 
+  console.log(isConnected, 'isConnected---home');
+  console.log(address, 'address---home');
+
   return (
-    <div className="p-2 bg-white border rounded shadow-lg">
-      <div className="mb-2">
+    <div>
+      {/* <div className="p-2 bg-white border rounded shadow-lg"> */}
+      {/* <div className="mb-2">
         <div className="text-gray-700">Connected Address:</div>
         <div className="font-semibold">
-          {address.slice(0, 6)}
+          {address?.slice(0, 6)}
           ...
-          {address.slice(-6)}
+          {address?.slice(-6)}
         </div>
       </div>
 
@@ -41,6 +49,7 @@ export default function Home() {
         href={`${chain.blockExplorers.default.url}/address/${address}`}
         target="_blank"
         className="text-blue-500 hover:underline"
+        rel="noreferrer"
       >
         Explore on Etherscan
       </a>
@@ -51,7 +60,21 @@ export default function Home() {
       >
         Disconnect
       </button>
-      <MintButton />
+      <MintButton /> */}
     </div>
   );
-}
+};
+
+const Home = () => {
+  return (
+    <div className="home-container ">
+      <Header />
+      <HomePage />
+      <div className="footer-wrap">
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+export default Home;

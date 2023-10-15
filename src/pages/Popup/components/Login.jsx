@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { createContext, useCallback, useState, useContext } from 'react';
 import { configureChains, useConnect } from 'wagmi';
 import { polygonMumbai } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
@@ -7,6 +7,11 @@ import {
   TwitterSocialWalletConnector,
 } from '@zerodev/wagmi';
 import { TwitterSVG } from '../assets/svg/exportSvg';
+import WelcomeLogo from '../assets/svg/welcome-logo.png';
+
+import ctx, { Provider, Consumer } from './appContext';
+
+import './Login.css';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [polygonMumbai],
@@ -31,7 +36,12 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { connect, isLoading } = useConnect();
 
-  const connectWallet = async () => {
+  const routerContext = useContext(ctx);
+
+  console.log(routerContext, 'data1');
+  console.log(routerContext?.routerLink, 'data1.routerLink');
+
+  const connectWallet = useCallback(async () => {
     setLoading(true);
     console.log('twitter');
 
@@ -39,18 +49,26 @@ export default function Login() {
       connector: connector,
     });
 
+    routerContext.routeTo('/home');
+
     setLoading(false);
-  };
+  }, [connect, routerContext]);
 
   return (
-    <div className="">
-      <div className="mt-16  bg-[#1D9BF0] text-white p-2 mx-8 rounded-full text-lg">
-        <button disabled={isLoading} onClick={connectWallet}>
-          <div className="flex">
-            {isLoading || loading ? 'Loading...' : 'Connect to Twitter'}
-            <div className="ml-1 mt-[1px]">
+    <div className="login">
+      <img
+        src={WelcomeLogo}
+        alt=""
+        className="welcome-logo mt-28"
+        style={{ width: '240px', height: '80px' }}
+      />
+      <div className="bg-[#000] text-white mx-8 my-7 text-xs rounded-full w-36 h-8 leading-7 flex justify-center justify-items-center connect-btn">
+        <button disabled={isLoading} onClick={connectWallet} className="">
+          <div>
+            {isLoading || loading ? 'Loading...' : 'Connect Wallet'}
+            {/* <div className="ml-1 mt-[1px]">
               <TwitterSVG />
-            </div>
+            </div> */}
           </div>
         </button>
       </div>

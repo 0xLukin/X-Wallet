@@ -8,7 +8,7 @@ export default function InjectedApp() {
     console.log('2222');
   };
   return (
-    <div className=" w-[500px] h-[500px]">
+    <div className="w-[350px] h-[375px]">
       {/* <div
         id="AAclick"
         onClick={() => {

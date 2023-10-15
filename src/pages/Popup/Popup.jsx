@@ -1,19 +1,20 @@
 import React from 'react';
-import './Popup.css';
 import { Web3Provider } from './config/Web3Provider';
 import Content from './components/Content';
 import Header from './components/Header';
 
+import './Popup.css';
+
 const Popup = () => {
   return (
-    <div className="App">
+    <div className="App bg-[#F7F9F9] w-[350px] h-[375px]">
       <Web3Provider>
-        <header className="App-header">
+        {/* <header className="App-header">
           <Header />
-        </header>
-        <body className="App-body">
+        </header> */}
+        <div className="App-body">
           <Content />
-        </body>
+        </div>
       </Web3Provider>
     </div>
   );
