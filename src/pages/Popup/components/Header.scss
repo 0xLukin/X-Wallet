@@ -1,0 +1,12 @@
+.twitter-name {
+  display: flex;
+  align-items: center;
+}
+.setting-wrap {
+  gap: 14px;
+  align-items: center;
+  .setting-logo {
+    width: 31px;
+    height: 28px;
+  }
+}
