@@ -26,8 +26,8 @@ export function useWallet() {
   let ecdsaProvider;
 
   const [ecdsaProvider_global, setEcdsaProvider_global] = useState(null);
-  const [account_address, setAccount_address] = useState('xxxx');
-  const [accountName, setAccountName] = useState('xxssssxx');
+  const [account_address, setAccount_address] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const { connect, connectAsync } = useConnect();
@@ -86,7 +86,7 @@ export function useWallet() {
     // 查询accountaddress
     const addressInHandle = await getaddress(handle.name);
     console.log(handle.name);
-    console.log('account_address:' + account_address['account_address']);
+    console.log('account_address:' + addressInHandle['account_address']);
 
     // 如果已经部署了就会抛出错误
     try {
@@ -115,6 +115,7 @@ export function useWallet() {
     setIsConnected(true);
     localStorage.setItem('handleName', handle.name);
     localStorage.setItem('accountAddress', addressInHandle['account_address']);
+    // sessionStorage.setItem('ecdsaProvider', JSON.stringify(ecdsaProvider));
 
     console.log(ecdsaProvider);
     setIsLoading(false);
@@ -145,7 +146,18 @@ export function useWallet() {
   }, [ecdsaProvider]);
 
   const sendETH = useCallback(
-    async (targe, value) => {
+    async (connector, targe, value) => {
+      const ecdsaProvider = await ECDSAProvider.init({
+        projectId: 'fc514f35-ed25-4100-97e6-90dd298a5d64',
+        owner: getRPCProviderOwner(connector.web3Auth.provider),
+        opts: {
+          accountConfig: {
+            accountAddress: localStorage.getItem('accountAddress'),
+          },
+        },
+      });
+
+      console.log(ecdsaProvider);
       const to_address = await getaddress(targe);
       console.log('to_address:' + to_address['account_address']);
       const { hash } = await ecdsaProvider.sendUserOperation({

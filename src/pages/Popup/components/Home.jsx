@@ -257,7 +257,7 @@ const Home = () => {
   };
 
   const handleSendClick = async () => {
-    const res = await sendETH(twitterName, account);
+    const res = await sendETH(connector, twitterName, account);
 
     console.log(res, 'reshash =====');
   };
