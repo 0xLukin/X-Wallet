@@ -151,7 +151,7 @@ export function useWallet() {
       const { hash } = await ecdsaProvider.sendUserOperation({
         target: to_address['account_address'],
         data: '0x',
-        value: value,
+        value: parseEther(value),
       });
       console.log(hash);
       return hash;
