@@ -25,8 +25,10 @@ const connector = new TwitterSocialWalletConnector({
 
 export function useWallet() {
   let ecdsaProvider;
+
   const [ecdsaProvider_global, setEcdsaProvider_global] = useState(null);
-  const [account_address, setAccount_address] = useState();
+  const [account_address, setAccount_address] = useState('xxxx');
+  const [account_name, setAccount_name] = useState('xxxx');
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const { connect, connectAsync } = useConnect();
@@ -71,55 +73,59 @@ export function useWallet() {
     );
     return await response.json();
   };
-  const login = useCallback(async () => {
+  const login = async () => {
     setIsLoading(true);
     console.log('twitter');
-    connectAsync({
+    const res = await connectAsync({
       connector: connector,
-    }).then(async (res) => {
-      // 查询地址和owner
-      const handle = await res.connector.web3Auth.getUserInfo();
-      const owner = await res.connector.owner.getAddress();
-      console.log(owner);
-      // 查询accountaddress
-      const account_address = await getaddress(handle.name);
-      console.log(handle.name);
-      console.log('account_address:' + account_address['account_address']);
-
-      // 如果已经部署了就会抛出错误
-      try {
-        const re = await deploy(handle.name, owner);
-        console.log(re);
-      } catch (err) {
-        console.log(err);
-      }
-      ecdsaProvider = await ECDSAProvider.init({
-        projectId: 'fc514f35-ed25-4100-97e6-90dd298a5d64',
-        owner: getRPCProviderOwner(res.connector.web3Auth.provider),
-        opts: {
-          accountConfig: {
-            accountAddress: account_address['account_address'],
-          },
-        },
-      });
-      //   console.log(ecdsaProvider);
-      //   console.log(await ecdsaProvider.getAddress());
-      // 设置全局ecdsaProvider
-      setAccount_address(account_address['account_address']);
-      setEcdsaProvider_global(ecdsaProvider);
-      setIsConnected(true);
-
-      console.log(ecdsaProvider);
-      setIsLoading(false);
-
-      // 无gas mint test
-      //   await mintNft();
-      //   await sendETH('0xLuki 🥤', parseEther('0.001'));
-      await disConnect();
     });
+    // 查询地址和owner
+    const handle = await res.connector.web3Auth.getUserInfo();
+    const owner = await res.connector.owner.getAddress();
+    console.log(owner);
+    // 查询accountaddress
+    const account_address = await getaddress(handle.name);
+    console.log(handle.name);
+    console.log('account_address:' + account_address['account_address']);
+
+    // 如果已经部署了就会抛出错误
+    try {
+      const re = await deploy(handle.name, owner);
+      console.log(re);
+    } catch (err) {
+      console.log(err);
+    }
+    ecdsaProvider = await ECDSAProvider.init({
+      projectId: 'fc514f35-ed25-4100-97e6-90dd298a5d64',
+      owner: getRPCProviderOwner(res.connector.web3Auth.provider),
+      opts: {
+        accountConfig: {
+          accountAddress: account_address['account_address'],
+        },
+      },
+    });
+    //   console.log(ecdsaProvider);
+    //   console.log(await ecdsaProvider.getAddress());
+    // 设置全局ecdsaProvider
+    console.log('twitter' + handle.name);
+    setAccount_address(account_address['account_address']);
+    setAccount_name(handle.name);
+    setEcdsaProvider_global(ecdsaProvider);
+    setIsConnected(true);
+
+    console.log(ecdsaProvider);
+    setIsLoading(false);
 
     // routerContext.routeTo('/home');
-  }, []);
+
+    // 无gas mint test
+    //   await mintNft();
+    //   await sendETH('0xLuki 🥤', parseEther('0.001'));
+    //   await disConnect();
+
+    // routerContext.routeTo('/home');
+  };
+
   const mintNft = useCallback(async () => {
     const account_address = await ecdsaProvider.getAddress();
     // console.log(account_address);
@@ -163,10 +169,12 @@ export function useWallet() {
     mintNft,
     ecdsaProvider_global,
     account_address,
+    account_name,
     isLoading,
     setIsLoading,
     account_balance,
     isConnected,
     disConnect,
+    ecdsaProvider,
   };
 }

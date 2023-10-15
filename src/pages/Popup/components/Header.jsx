@@ -43,7 +43,7 @@ const Header = ({
           <Button value="&larr;" onClick={() => onClick('home')} />
         ) : (
           <div className="twitter-name">
-            <Button value={`@${twitterName}`} />
+            <Button value={`@${routerContext.userInfo.account_name}`} />
           </div>
         )}
 

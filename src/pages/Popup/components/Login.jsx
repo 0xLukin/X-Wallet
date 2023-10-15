@@ -12,6 +12,7 @@ import WelcomeLogo from '../assets/svg/welcome-logo.png';
 import ctx, { Provider, Consumer } from './appContext';
 
 import './Login.css';
+import { useWallet } from '../hooks/useWallet';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [polygonMumbai],
@@ -34,7 +35,9 @@ const socialConnector = new SocialWalletConnector({
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const { connect, isLoading } = useConnect();
+
+  const { connect } = useConnect();
+  const { login, isLoading, account_name } = useWallet();
   const commonContext = useContext(ctx);
 
   console.log(commonContext, 'data1');
@@ -47,7 +50,7 @@ export default function Login() {
       connector: connector,
     });
 
-    commonContext.setUserInfo({});
+    commonContext.setUserInfo({ account_name });
     commonContext.routeTo('/home');
 
     setLoading(false);
@@ -62,7 +65,15 @@ export default function Login() {
         style={{ width: '240px', height: '80px' }}
       />
       <div className="bg-[#000] text-white mx-8 my-7 text-xs rounded-full w-36 h-8 leading-7 flex justify-center justify-items-center connect-btn">
-        <button disabled={isLoading} onClick={connectWallet} className="">
+        <button
+          disabled={isLoading}
+          onClick={async () => {
+            await login();
+
+            commonContext.routeTo('/home');
+          }}
+          className=""
+        >
           <div>
             {isLoading || loading ? 'Loading...' : 'Connect Wallet'}
             {/* <div className="ml-1 mt-[1px]">
