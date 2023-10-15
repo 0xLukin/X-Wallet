@@ -14,7 +14,7 @@ import SettingLogo from '../assets/svg/setting.png';
 
 import './Footer.scss';
 
-const Footer = ({ tabKey, onClick, onSendClick }) => {
+const Footer = ({ tabKey, onClick, onSendClick, disabled }) => {
   const handleTabClick = useCallback(
     (e) => {
       const { tabKey } = e.target.dataset;
@@ -26,6 +26,8 @@ const Footer = ({ tabKey, onClick, onSendClick }) => {
   );
   const isSend = tabKey === 'send';
 
+  console.log(disabled, 'disableddisableddisabled');
+
   return (
     <div
       className={`footer-box ${
@@ -33,9 +35,10 @@ const Footer = ({ tabKey, onClick, onSendClick }) => {
           ? 'flex justify-center items-center text-white bg-[#1D9BF0] cursor-pointer'
           : ''
       }`}
+      onClick={isSend ? onSendClick : null}
     >
       {isSend ? (
-        <div onClick={onSendClick}>send</div>
+        <div>{disabled ? 'Loading...' : 'Send'}</div>
       ) : (
         <>
           <div

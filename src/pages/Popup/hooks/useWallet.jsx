@@ -22,7 +22,7 @@ const connector = new TwitterSocialWalletConnector({
   },
 });
 
-export function useWallet() {
+export const useWallet = () => {
   let ecdsaProvider;
 
   const [ecdsaProvider_global, setEcdsaProvider_global] = useState(null);
@@ -199,4 +199,4 @@ export function useWallet() {
     disConnect,
     ecdsaProvider,
   };
-}
+};

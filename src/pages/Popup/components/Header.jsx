@@ -1,17 +1,10 @@
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-  useContext,
-} from 'react';
-import { useAccount, useDisconnect, useNetwork } from 'wagmi';
+import React, { useEffect, useState, useContext } from 'react';
+import { useAccount } from 'wagmi';
 import Button from './Button';
 import ctx, { Provider, Consumer } from './appContext';
 
-import SettingLogo from '../assets/svg/setting.png';
-
 import './Header.scss';
+import { urlFormat } from './Home';
 
 const Header = ({
   isHaveBack = false,
@@ -53,7 +46,7 @@ const Header = ({
           ) : null}
           {isHaveSetting ? (
             <img
-              src={SettingLogo}
+              src={urlFormat('setting')}
               className="setting-logo"
               onClick={() => onClick?.('setting')}
             />

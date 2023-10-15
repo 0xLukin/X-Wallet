@@ -13,6 +13,7 @@ import ETH from '../assets/svg/eth.png';
 import Matic from '../assets/svg/matic.png';
 import QbradyEyes from '../assets/svg/qbrady_eyes.png';
 import QbradyManga from '../assets/svg/qbrady_manga.png';
+// import ArrowDown from '../assets/svg/arrow_down.png';
 import ArrowDown from '../assets/svg/arrow_down.png';
 import ArrowRight from '../assets/svg/arrow_right.png';
 import Kanjigirl from '../assets/svg/qbrady_kanjigirl.png';
@@ -21,6 +22,11 @@ import Warrior from '../assets/svg/qbrady_warrior.png';
 
 import './Home.scss';
 import { useWallet } from '../hooks/useWallet';
+
+export const urlFormat = (url) =>
+  'https://raw.githubusercontent.com/0xLukin/x-wallet-ethhangzhou/main/src/pages/Popup/assets/svg/' +
+  url +
+  '.png';
 
 const Home = () => {
   const { address, connector, isConnected } = useAccount();
@@ -33,8 +39,8 @@ const Home = () => {
   const [account, setAccount] = useState('');
   const [targetAddress, setTargetAddress] = useState('');
   const [twitterName, setTwitterName] = useState('');
-
   const { getaddress, sendETH } = useWallet();
+  const [loading, setLoading] = useState(false);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -52,7 +58,11 @@ const Home = () => {
 
   const CopyBtn = (
     <div className="copy-btn">
-      <img style={{ width: '9px', height: '14px' }} src={Copy} alt="" />
+      <img
+        style={{ width: '9px', height: '14px' }}
+        src={urlFormat('copy')}
+        alt=""
+      />
     </div>
   );
 
@@ -66,7 +76,7 @@ const Home = () => {
           />
         </div>
         <div className="unit">net Worth</div>
-        <div className="worth">${`${Number(data.formatted) * 0.5}`}</div>
+        <div className="worth">${`${Number(data?.formatted) * 0.5}`}</div>
       </>
     );
   };
@@ -75,52 +85,28 @@ const Home = () => {
     () => [
       {
         name: 'Matic',
-        symbol: Matic,
+        symbol: urlFormat('matic'),
         decimals: 18,
-        account: data.formatted,
+        account: data?.formatted,
       },
       {
         name: 'ETH',
-        symbol: ETH,
+        symbol: urlFormat('eth'),
         decimals: 18,
         account: '0',
       },
       {
         name: 'BTC',
-        symbol: BTC,
+        symbol: urlFormat('btc'),
         decimals: 18,
         account: '0',
       },
       {
         name: 'BNB',
-        symbol: BNB,
+        symbol: urlFormat('bnb'),
         decimals: 18,
         account: '0',
       },
-      // {
-      //   name: 'Matic',
-      //   symbol: Matic,
-      //   decimals: 18,
-      //   account: data.formatted,
-      // },
-      // {
-      //   name: 'Matic',
-      //   symbol: Matic,
-      //   decimals: 18,
-      //   account: '125',
-      // },
-      // {
-      //   name: 'Matic',
-      //   symbol: Matic,
-      //   decimals: 18,
-      //   account: '125',
-      // },
-      // {
-      //   name: 'Matic',
-      //   symbol: Matic,
-      //   decimals: 18,
-      //   account: '125',
-      // },
     ],
     [data]
   );
@@ -128,11 +114,16 @@ const Home = () => {
     () => [
       {
         name: 'MINMIN Art',
-        symbols: [QbradyEyes, QbradyManga, Kanjigirl, Warrior],
+        symbols: [
+          'qbrady_eyes',
+          'qbrady_manga',
+          'qbrady_kanjigirl',
+          'qbrady_warrior',
+        ].map((item) => urlFormat(item)),
       },
       {
         name: 'Maka Baka',
-        symbols: [Kodama],
+        symbols: [urlFormat('qbrady_kodama')],
       },
     ],
     []
@@ -187,7 +178,7 @@ const Home = () => {
       <div className="token-item">
         <div className="token-title">{item.name}</div>
         <div className="token-extend">
-          <img src={ArrowDown} alt="" className="w-[15px]" />
+          <img src={urlFormat('arrow_down')} alt="" className="w-[15px]" />
         </div>
       </div>
     );
@@ -223,7 +214,7 @@ const Home = () => {
           <div className="token-title">{item}</div>
           {!isQuit && (
             <div className="token-extend">
-              <img src={ArrowRight} alt="" className="w-[8px]" />
+              <img src={urlFormat('arrow_right')} alt="" className="w-[8px]" />
             </div>
           )}
         </div>
@@ -261,14 +252,22 @@ const Home = () => {
 
   const handleGetAddress = async (e) => {
     const name = e.target.value;
+
+    setLoading(true);
     const res = await getaddress(name);
 
+    setLoading(false);
     setTargetAddress(res?.['account_address']);
   };
 
   const handleSendClick = async () => {
-    const res = await sendETH(connector, twitterName, account);
+    setLoading(true);
 
+    const res = await sendETH(connector, twitterName, account);
+    setTabKey('home');
+    setLoading(false);
+
+    message.success('send success.');
     console.log(res, 'reshash =====');
   };
 
@@ -288,7 +287,7 @@ const Home = () => {
             <div className="flex justify-center item-style">
               <div className="label-style"></div>
               <div className="input-style flex justify-start font-medium leading-10">
-                {`MATIC: ${data.formatted} `}
+                {`MATIC: ${data?.formatted} `}
               </div>
             </div>
             <div className="flex justify-center item-style">
@@ -327,6 +326,7 @@ const Home = () => {
             tabKey={tabKey}
             onClick={setTabKey}
             onSendClick={handleSendClick}
+            disabled={loading}
           />
         </div>
       )}
