@@ -114,7 +114,7 @@ export function useWallet() {
     setEcdsaProvider_global(ecdsaProvider);
     setIsConnected(true);
     localStorage.setItem('handleName', handle.name);
-    localStorage.setItem('accountAddress', account_address['account_address']);
+    localStorage.setItem('accountAddress', addressInHandle['account_address']);
 
     console.log(ecdsaProvider);
     setIsLoading(false);

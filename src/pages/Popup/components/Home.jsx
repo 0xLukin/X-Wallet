@@ -30,11 +30,13 @@ const Home = () => {
   const [targetAddress, setTargetAddress] = useState('');
   const [twitterName, setTwitterName] = useState('');
 
-  const { getaddress } = useWallet();
+  const { getaddress, sendETH } = useWallet();
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText('789asda4..4285');
+      await navigator.clipboard.writeText(
+        localStorage.getItem('accountAddress')
+      );
       message.info('sucessed copied.');
 
       console.log('Code copied to clipboard!');
@@ -254,6 +256,12 @@ const Home = () => {
     setTargetAddress(res?.['account_address']);
   };
 
+  const handleSendClick = async () => {
+    const res = await sendETH(twitterName, account);
+
+    console.log(res, 'reshash =====');
+  };
+
   const isSend = tabKey === 'send';
 
   return (
@@ -298,15 +306,6 @@ const Home = () => {
                 {addressFormat(targetAddress)}
               </div>
             </div>
-            {/* <div className="flex justify-center item-style">
-              <div className="label-style">Target Address</div>
-              <input
-                type="text"
-                value={addressFormat(targetAddress)}
-                disabled
-                className="input-style"
-              />
-            </div> */}
           </>
         ) : (
           renderContent()
@@ -314,7 +313,11 @@ const Home = () => {
       </div>
       {tabKey !== 'setting' && (
         <div className="footer-wrap">
-          <Footer tabKey={tabKey} onClick={setTabKey} />
+          <Footer
+            tabKey={tabKey}
+            onClick={setTabKey}
+            onSendClick={handleSendClick}
+          />
         </div>
       )}
     </div>

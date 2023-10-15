@@ -14,7 +14,7 @@ import SettingLogo from '../assets/svg/setting.png';
 
 import './Footer.scss';
 
-const Footer = ({ tabKey, onClick }) => {
+const Footer = ({ tabKey, onClick, onSendClick }) => {
   const handleTabClick = useCallback(
     (e) => {
       const { tabKey } = e.target.dataset;
@@ -35,7 +35,7 @@ const Footer = ({ tabKey, onClick }) => {
       }`}
     >
       {isSend ? (
-        <div>send</div>
+        <div onClick={onSendClick}>send</div>
       ) : (
         <>
           <div
