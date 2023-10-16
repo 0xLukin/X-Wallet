@@ -1,4 +1,4 @@
-<img src="src/assets/img/icon-128.png" width="64"/>
+<img src="src/assets/img/icon-github.png" width="64"/>
 
 # Xwallet: Twitter Onboarding 
 
