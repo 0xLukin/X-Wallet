@@ -291,7 +291,7 @@ const Home = () => {
               </div>
             </div>
             <div className="flex justify-center item-style">
-              <div className="label-style">Account</div>
+              <div className="label-style">Amount</div>
               <input
                 type="text"
                 value={account}
