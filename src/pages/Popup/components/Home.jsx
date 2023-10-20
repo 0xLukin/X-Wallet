@@ -254,10 +254,20 @@ const Home = () => {
     const name = e.target.value;
 
     setLoading(true);
-    const res = await getaddress(name);
 
-    setLoading(false);
-    setTargetAddress(res?.['account_address']);
+    // 检查 name 是否符合以太坊地址的格式
+    const isEthereumAddress = /^0x[0-9a-fA-F]{40}$/.test(name);
+
+    if (isEthereumAddress) {
+      // 如果是以太坊地址，直接使用 name 作为目标地址
+      setTargetAddress(name);
+      setLoading(false);
+    } else {
+      // 如果不是以太坊地址，调用 getaddress 函数获取地址
+      const res = await getaddress(name);
+      setLoading(false);
+      setTargetAddress(res?.['account_address']);
+    }
   };
 
   const handleSendClick = async () => {
@@ -304,11 +314,13 @@ const Home = () => {
               <input
                 type="text"
                 value={twitterName}
+                placeholder="name or address"
                 onChange={handleNameChange}
                 onBlur={handleGetAddress}
                 className="input-style"
               />
             </div>
+
             <div className="flex justify-center item-style">
               <div className="label-style">Target Address</div>
               <div className="input-style flex justify-start font-medium leading-10">
