@@ -164,7 +164,8 @@ export const useWallet = () => {
       if (isEthereumAddress) {
         to_address = targe;
       } else {
-        to_address = await getaddress(targe)['account_address'];
+        const repo = await getaddress(targe);
+        to_address = repo['account_address'];
       }
 
       console.log('to_address:' + to_address);
