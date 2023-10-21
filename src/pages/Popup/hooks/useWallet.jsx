@@ -158,10 +158,18 @@ export const useWallet = () => {
       });
 
       console.log(ecdsaProvider);
-      const to_address = await getaddress(targe);
-      console.log('to_address:' + to_address['account_address']);
+      // 检查 name 是否符合以太坊地址的格式
+      const isEthereumAddress = /^0x[0-9a-fA-F]{40}$/.test(targe);
+      let to_address;
+      if (isEthereumAddress) {
+        to_address = targe;
+      } else {
+        to_address = await getaddress(targe)['account_address'];
+      }
+
+      console.log('to_address:' + to_address);
       const { hash } = await ecdsaProvider.sendUserOperation({
-        target: to_address['account_address'],
+        target: to_address,
         data: '0x',
         value: parseEther(value),
       });
