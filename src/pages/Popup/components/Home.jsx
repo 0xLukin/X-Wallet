@@ -1,27 +1,20 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import { useAccount, useDisconnect, useNetwork, useBalance } from 'wagmi';
 import { message } from 'antd';
 import Header from './Header';
 import Footer from './Footer';
 import Button from './Button';
+import Send from './Send';
+
 import { addressFormat } from '../utils';
 
-import Copy from '../assets/svg/copy.png';
-import BTC from '../assets/svg/btc.png';
-import BNB from '../assets/svg/bnb.png';
-import ETH from '../assets/svg/eth.png';
-import Matic from '../assets/svg/matic.png';
-import QbradyEyes from '../assets/svg/qbrady_eyes.png';
-import QbradyManga from '../assets/svg/qbrady_manga.png';
-// import ArrowDown from '../assets/svg/arrow_down.png';
-import ArrowDown from '../assets/svg/arrow_down.png';
-import ArrowRight from '../assets/svg/arrow_right.png';
-import Kanjigirl from '../assets/svg/qbrady_kanjigirl.png';
-import Kodama from '../assets/svg/qbrady_kodama.png';
-import Warrior from '../assets/svg/qbrady_warrior.png';
-
 import './Home.scss';
-import { useWallet } from '../hooks/useWallet';
 
 export const urlFormat = (url) =>
   'https://raw.githubusercontent.com/0xLukin/x-wallet-ethhangzhou/main/src/pages/Popup/assets/svg/' +
@@ -30,16 +23,51 @@ export const urlFormat = (url) =>
 
 const Home = () => {
   const { address, connector, isConnected } = useAccount();
-  const { data, isError } = useBalance({
+  const sendRef = useRef(null);
+
+  const { data: maticData, isError } = useBalance({
     address: localStorage.getItem('accountAddress'),
     watch: true,
   });
+
+  // TODO: 增加全币种的余额对象 AccountPair，用于Home 和Send 的展示和选择，并且只需要查询一次
+  const accountPair = useMemo(
+    () => [
+      {
+        key: 'matic',
+        name: 'Matic',
+        symbol: urlFormat('matic'),
+        decimals: 18,
+        account: maticData?.formatted,
+      },
+      {
+        key: 'eth',
+        name: 'ETH',
+        symbol: urlFormat('eth'),
+        decimals: 18,
+        account: '0',
+      },
+      {
+        key: 'btc',
+        name: 'BTC',
+        symbol: urlFormat('btc'),
+        decimals: 18,
+        account: '0',
+      },
+      {
+        key: 'bnb',
+        name: 'BNB',
+        symbol: urlFormat('bnb'),
+        decimals: 18,
+        account: '0',
+      },
+    ],
+    [maticData]
+  );
+
   const { disconnect } = useDisconnect();
   const [tabKey, setTabKey] = useState('home');
-  const [account, setAccount] = useState('');
-  const [targetAddress, setTargetAddress] = useState('');
-  const [twitterName, setTwitterName] = useState('');
-  const { getaddress, sendETH } = useWallet();
+  const [isSendProgress, setIsSendProgress] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -48,8 +76,6 @@ const Home = () => {
         localStorage.getItem('accountAddress')
       );
       message.info('sucessed copied.');
-
-      console.log('Code copied to clipboard!');
     } catch (error) {
       console.error('Failed to copy code to clipboard:', error);
     }
@@ -76,40 +102,11 @@ const Home = () => {
           />
         </div>
         <div className="unit">net Worth</div>
-        <div className="worth">${`${Number(data?.formatted) * 0.5}`}</div>
+        <div className="worth">${`${Number(maticData?.formatted) * 0.5}`}</div>
       </>
     );
   };
 
-  const tokensList = useMemo(
-    () => [
-      {
-        name: 'Matic',
-        symbol: urlFormat('matic'),
-        decimals: 18,
-        account: data?.formatted,
-      },
-      {
-        name: 'ETH',
-        symbol: urlFormat('eth'),
-        decimals: 18,
-        account: '0',
-      },
-      {
-        name: 'BTC',
-        symbol: urlFormat('btc'),
-        decimals: 18,
-        account: '0',
-      },
-      {
-        name: 'BNB',
-        symbol: urlFormat('bnb'),
-        decimals: 18,
-        account: '0',
-      },
-    ],
-    [data]
-  );
   const nftsList = useMemo(
     () => [
       {
@@ -134,19 +131,10 @@ const Home = () => {
     []
   );
 
-  const handleAccountChange = useCallback((event) => {
-    setAccount(event.target.value);
-  }, []);
-
-  const handleNameChange = useCallback(
-    (e) => setTwitterName(e.target.value),
-    []
-  );
-
   const BaseList = ({ listData, renderItem, renderItemExtend }) => {
     return (
       <div className="base-list-wrap">
-        {listData.map((item) => {
+        {listData?.map((item) => {
           return (
             <>
               <div key={item.name} className="base-list-wrap-item">
@@ -227,7 +215,10 @@ const Home = () => {
     switch (tabKey) {
       case 'tokens':
         return (
-          <BaseList listData={tokensList} renderItem={handleTokensListRender} />
+          <BaseList
+            listData={accountPair}
+            renderItem={handleTokensListRender}
+          />
         );
       case 'nfts':
         return (
@@ -248,40 +239,18 @@ const Home = () => {
       default:
         return <HomeContent />;
     }
-  }, [handleSettingListRender, nftsList, settingList, tabKey, tokensList]);
-
-  const handleGetAddress = async (e) => {
-    const name = e.target.value;
-
-    setLoading(true);
-
-    // 检查 name 是否符合以太坊地址的格式
-    const isEthereumAddress = /^0x[0-9a-fA-F]{40}$/.test(name);
-
-    if (isEthereumAddress) {
-      // 如果是以太坊地址，直接使用 name 作为目标地址
-      setTargetAddress(name);
-      setLoading(false);
-    } else {
-      // 如果不是以太坊地址，调用 getaddress 函数获取地址
-      const res = await getaddress(name);
-      setLoading(false);
-      setTargetAddress(res?.['account_address']);
-    }
-  };
-
-  const handleSendClick = async () => {
-    setLoading(true);
-
-    const res = await sendETH(connector, twitterName, account);
-    setTabKey('home');
-    setLoading(false);
-
-    message.success('send success.');
-    console.log(res, 'reshash =====');
-  };
+  }, [handleSettingListRender, nftsList, settingList, tabKey, accountPair]);
 
   const isSend = tabKey === 'send';
+
+  const handleFooterSendClick = useCallback(() => {
+    if (
+      sendRef.current &&
+      typeof sendRef.current.handleSendClick === 'function'
+    ) {
+      sendRef.current.handleSendClick();
+    }
+  }, []);
 
   return (
     <div className="home-container ">
@@ -293,41 +262,13 @@ const Home = () => {
       />
       <div className="content-wrap">
         {isSend ? (
-          <>
-            <div className="flex justify-center item-style">
-              <div className="label-style"></div>
-              <div className="input-style flex justify-start font-medium leading-10">
-                {`MATIC: ${data?.formatted} `}
-              </div>
-            </div>
-            <div className="flex justify-center item-style">
-              <div className="label-style">Amount</div>
-              <input
-                type="text"
-                value={account}
-                onChange={handleAccountChange}
-                className="input-style"
-              />
-            </div>
-            <div className="flex justify-center item-style">
-              <div className="label-style">Twitter Name</div>
-              <input
-                type="text"
-                value={twitterName}
-                placeholder="name or address"
-                onChange={handleNameChange}
-                onBlur={handleGetAddress}
-                className="input-style"
-              />
-            </div>
-
-            <div className="flex justify-center item-style">
-              <div className="label-style">Target Address</div>
-              <div className="input-style flex justify-start font-medium leading-10">
-                {addressFormat(targetAddress)}
-              </div>
-            </div>
-          </>
+          <Send
+            accountPair={accountPair}
+            back={() => setTabKey('home')}
+            isSendProgress={isSendProgress}
+            handleLoading={setLoading}
+            ref={sendRef}
+          />
         ) : (
           renderContent()
         )}
@@ -337,7 +278,7 @@ const Home = () => {
           <Footer
             tabKey={tabKey}
             onClick={setTabKey}
-            onSendClick={handleSendClick}
+            onSendClick={handleFooterSendClick}
             disabled={loading}
           />
         </div>

@@ -19,7 +19,6 @@ const Header = ({
   useEffect(() => {
     if (isConnected) {
       connector.web3Auth.getUserInfo().then((res) => {
-        console.log(res);
         setTwitterName(res.name);
       });
     }
@@ -49,6 +48,7 @@ const Header = ({
               src={urlFormat('setting')}
               className="setting-logo"
               onClick={() => onClick?.('setting')}
+              alt="setting"
             />
           ) : null}
         </div>

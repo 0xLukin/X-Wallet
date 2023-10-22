@@ -1,16 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useState,
-  useContext,
-  useEffect,
-} from 'react';
-import { useAccount, useDisconnect, useNetwork } from 'wagmi';
-import Button from './Button';
-
-import ctx, { Provider, Consumer } from './appContext';
-
-import SettingLogo from '../assets/svg/setting.png';
+import React, { useCallback } from 'react';
 
 import './Footer.scss';
 
@@ -19,14 +7,11 @@ const Footer = ({ tabKey, onClick, onSendClick, disabled }) => {
     (e) => {
       const { tabKey } = e.target.dataset;
 
-      // routeTo(`/${tabKey}`);
       onClick?.(tabKey);
     },
     [onClick]
   );
   const isSend = tabKey === 'send';
-
-  console.log(disabled, 'disableddisableddisabled');
 
   return (
     <div
