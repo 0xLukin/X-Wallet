@@ -14,7 +14,7 @@ const Send = React.forwardRef(
     const [loading, setLoading] = useState(false);
 
     // TODO: 需要增加各币种的转账
-    const { getaddress, sendETH } = useWallet();
+    const { getaddress, sendETH, sendERC20 } = useWallet();
 
     const [currentCoin, setCurrentCoin] = useState(accountPair?.[0].key);
     const handleAccountChange = useCallback((event) => {
@@ -39,8 +39,13 @@ const Send = React.forwardRef(
       } else {
         // 如果不是以太坊地址，调用 getaddress 函数获取地址
         const res = await getaddress(name);
+        if (res?.['account_address']) {
+          setTargetAddress(res?.['account_address']);
+        } else {
+          message.error(res.error);
+          setTargetAddress('');
+        }
         setLoading(false);
-        setTargetAddress(res?.['account_address']);
       }
     };
 
@@ -49,8 +54,29 @@ const Send = React.forwardRef(
       console.log(twitterName, 'tiwttiername');
       console.log(account, 'account');
       console.log(connector, 'connector');
+      const erc20 =
+        accountPair?.filter((item) => item.key === currentCoin)?.[0].contract ||
+        0;
 
-      debugger;
+      if (erc20 == 0) {
+        // 选择的是MATIC
+        console.log('send MATIC');
+        const res = await sendETH(connector, twitterName, account);
+        setLoading(false);
+        back?.();
+        message.success('send success.');
+        console.log(res, 'reshash =====');
+      } else {
+        // 选择的是MATIC
+        console.log('send ERC20');
+        const res = await sendERC20(connector, erc20, twitterName, account);
+        setLoading(false);
+        back?.();
+        message.success('send success.');
+        console.log(res, 'reshash =====');
+      }
+
+      // debugger;
 
       //   const res = await sendETH(connector, twitterName, account);
       //   setLoading(false);

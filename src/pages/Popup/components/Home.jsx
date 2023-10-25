@@ -29,40 +29,32 @@ const Home = () => {
     address: localStorage.getItem('accountAddress'),
     watch: true,
   });
+  const { data: usdtData } = useBalance({
+    address: localStorage.getItem('accountAddress'),
+    token: '0x4aAeB0c6523e7aa5Adc77EAD9b031ccdEA9cB1c3',
+    watch: true,
+  });
 
   // TODO: 增加全币种的余额对象 AccountPair，用于Home 和Send 的展示和选择，并且只需要查询一次
   const accountPair = useMemo(
     () => [
       {
         key: 'matic',
-        name: 'Matic',
+        name: 'MATIC',
         symbol: urlFormat('matic'),
         decimals: 18,
         account: maticData?.formatted,
       },
       {
-        key: 'eth',
-        name: 'ETH',
-        symbol: urlFormat('eth'),
+        key: 'usdt',
+        name: 'USDT',
+        symbol: urlFormat('matic'),
         decimals: 18,
-        account: '0',
-      },
-      {
-        key: 'btc',
-        name: 'BTC',
-        symbol: urlFormat('btc'),
-        decimals: 18,
-        account: '0',
-      },
-      {
-        key: 'bnb',
-        name: 'BNB',
-        symbol: urlFormat('bnb'),
-        decimals: 18,
-        account: '0',
+        account: usdtData?.formatted,
+        contract: '0x4aAeB0c6523e7aa5Adc77EAD9b031ccdEA9cB1c3',
       },
     ],
-    [maticData]
+    [maticData, usdtData]
   );
 
   const { disconnect } = useDisconnect();
