@@ -39,11 +39,8 @@ export default function Login() {
   const { login, isLoading, accountName } = useWallet();
   const commonContext = useContext(ctx);
 
-  console.log(commonContext, 'data1');
-
   // const connectWallet = useCallback(async () => {
   //   setLoading(true);
-  //   console.log('twitter');
 
   //   await connect({
   //     connector: connector,
@@ -54,13 +51,11 @@ export default function Login() {
 
   //   setLoading(false);
   // }, [connect, commonContext]);
-  console.log(accountName, 'local_name');
 
   const handleClick = useCallback(async () => {
     const name = await login();
     console.log(name, 'test-----name');
 
-    console.log(accountName, 'login)name======');
     commonContext.setUserInfo({ accountName });
     commonContext.routeTo('/home');
   }, [accountName, commonContext, login]);

@@ -5,7 +5,7 @@ import { publicProvider } from 'wagmi/providers/public';
 import { TwitterSocialWalletConnector } from '@zerodev/wagmi';
 import { ECDSAProvider, getRPCProviderOwner } from '@zerodev/sdk';
 import { NFT_Contract_Abi } from '../config/contractAbi';
-import { encodeFunctionData, parseEther } from 'viem';
+import { encodeFunctionData, parseEther, parseAbi } from 'viem';
 
 const contractAbi = NFT_Contract_Abi;
 const nftAddress = '0x34bE7f35132E97915633BC1fc020364EA5134863';
@@ -54,10 +54,28 @@ export const useWallet = () => {
     return await response.json();
   };
 
-  const deploy = async (handle, newOwner) => {
+  const getAddressById = async (id) => {
     const requestBody = JSON.stringify({
-      handle: handle,
+      id,
+    });
+    const response = await fetch(
+      'https://x-wallet-backend.vercel.app/api/getAddressById',
+      {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      }
+    );
+    return await response.json();
+  };
+
+  const deploy = async (newOwner, id) => {
+    const requestBody = JSON.stringify({
       newOwner: newOwner,
+      id: id,
     });
     const response = await fetch(
       'https://x-wallet-backend.vercel.app/api/deploy',
@@ -82,15 +100,21 @@ export const useWallet = () => {
     // 查询地址和owner
     const handle = await res.connector.web3Auth.getUserInfo();
     const owner = await res.connector.owner.getAddress();
+    const id = handle['verifierId'].split('|')[1];
+    console.log(handle);
     console.log(owner);
+    console.log(id);
+
     // 查询accountaddress
-    const addressInHandle = await getaddress(handle.name);
-    console.log(handle.name);
-    console.log('account_address:' + addressInHandle['account_address']);
+    const req = await getAddressById(id);
+    const userInfo = req['user_info'];
+    const accountAddress = req['account_address'];
+    console.log(userInfo);
+    console.log('account_address:' + accountAddress);
 
     // 如果已经部署了就会抛出错误
     try {
-      const re = await deploy(handle.name, owner);
+      const re = await deploy(owner, id);
       console.log(re);
     } catch (err) {
       console.log(err);
@@ -100,21 +124,20 @@ export const useWallet = () => {
       owner: getRPCProviderOwner(res.connector.web3Auth.provider),
       opts: {
         accountConfig: {
-          accountAddress: addressInHandle['account_address'],
+          accountAddress: accountAddress,
         },
       },
     });
     //   console.log(ecdsaProvider);
     //   console.log(await ecdsaProvider.getAddress());
     // 设置全局ecdsaProvider
-    console.log('twitter---------' + handle.name);
 
-    setAccount_address(addressInHandle['account_address']);
-    setAccountName(handle.name);
+    setAccount_address(accountAddress);
+    setAccountName(userInfo.username);
     setEcdsaProvider_global(ecdsaProvider);
     setIsConnected(true);
-    localStorage.setItem('handleName', handle.name);
-    localStorage.setItem('accountAddress', addressInHandle['account_address']);
+    localStorage.setItem('handleName', userInfo.username);
+    localStorage.setItem('accountAddress', accountAddress);
     // sessionStorage.setItem('ecdsaProvider', JSON.stringify(ecdsaProvider));
 
     console.log(ecdsaProvider);
@@ -128,7 +151,7 @@ export const useWallet = () => {
     //   await disConnect();
 
     // routerContext.routeTo('/home');
-    return handle.name;
+    return userInfo.username;
   }, [setAccountName]);
 
   const mintNft = useCallback(async () => {
@@ -180,6 +203,47 @@ export const useWallet = () => {
     [ecdsaProvider]
   );
 
+  const sendERC20 = useCallback(
+    async (connector, ERC20Contract, targe, value) => {
+      const ecdsaProvider = await ECDSAProvider.init({
+        projectId: 'fc514f35-ed25-4100-97e6-90dd298a5d64',
+        owner: getRPCProviderOwner(connector.web3Auth.provider),
+        opts: {
+          accountConfig: {
+            accountAddress: localStorage.getItem('accountAddress'),
+          },
+        },
+      });
+
+      console.log(ecdsaProvider);
+      // 检查 name 是否符合以太坊地址的格式
+      const isEthereumAddress = /^0x[0-9a-fA-F]{40}$/.test(targe);
+      let to_address;
+      if (isEthereumAddress) {
+        to_address = targe;
+      } else {
+        const repo = await getaddress(targe);
+        to_address = repo['account_address'];
+      }
+
+      const contractABI = parseAbi([
+        'function transfer(address recipient, uint256 amount) public',
+      ]);
+      const userOp = {
+        target: ERC20Contract,
+        data: encodeFunctionData({
+          abi: contractABI,
+          functionName: 'transfer',
+          args: [to_address, parseEther(value)],
+        }),
+      };
+      const { hash } = await ecdsaProvider.sendUserOperation([userOp]);
+      console.log(hash);
+      return hash;
+    },
+    [ecdsaProvider]
+  );
+
   const disConnect = useCallback(async () => {
     setIsConnected(false);
     setEcdsaProvider_global(null);
@@ -195,8 +259,10 @@ export const useWallet = () => {
 
   return {
     getaddress,
+    getAddressById,
     login,
     sendETH,
+    sendERC20,
     mintNft,
     ecdsaProvider_global,
     account_address,

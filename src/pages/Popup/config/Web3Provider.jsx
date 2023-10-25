@@ -21,7 +21,6 @@ export function Web3Provider(props) {
   useEffect(() => {
     setReady(true);
   }, []);
-  console.log(wagmiConfig);
   return (
     <>
       {ready && (

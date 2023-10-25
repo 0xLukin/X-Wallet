@@ -21,15 +21,14 @@ export default function Content() {
   const routeTo = (url) => setRouterLink(url);
 
   const renderContent = useCallback(() => {
-    console.log(routerLink, 'routerLink---content');
-
     switch (routerLink) {
       case linkUrls.login:
         return <Login />;
       case linkUrls.home:
         return <Home />;
       case linkUrls.send:
-      // return <Send />;
+        // return <Send />;
+        break;
       default:
         return <Login />;
     }
